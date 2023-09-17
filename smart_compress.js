@@ -20,40 +20,37 @@ const params = {
 };
 
 async function main() {
-  // Get list of files in input folder
-  fs.readdir(inputPath, async (err, files) => {
-    if (err) { console.error('Error occured while reading directory!', err); return }
-
-    // Add files to params
-    params.input_files = files;
-  });
+  params.input_files = fs.readdirSync(inputPath);
+  if (params.input_files.length === 0 || params.input_files === undefined) { console.error('Error occured while reading directory!', err); return }
+  console.log("Files found : " + params.input_files.length + "\n");
 
   // Ask user for filename prefix
-  let prefix = await prompt("Enter a prefix or leave empty (ex: 'toto' -> toto-1.png)");
+  let prefix = await prompt("Enter a prefix or leave empty (ex: 'toto' -> toto-1.png)\n");
   if (prefix === null) { prefix = ''; }
-  if (prefix !== '') { console.log("Prefix set to : " + prefix); }
+  if (prefix !== '') { console.log("Prefix set to : " + prefix + "\n"); }
   params.prefix = prefix !== '' ? prefix + '-' : '';
 
   // Ask user for format
-  let format = await prompt("Enter a format or leave empty (png, jpg, webp, tiff, gif, svg, pdf, raw, etc.)");
+  let format = await prompt("Enter a format or leave empty (png, jpg, webp, tiff, gif, svg, pdf, raw, etc.)\n");
   if (format === null) { format = ''; }
-  if (format !== '') { console.log("Format set to : " + format); }
+  if (format !== '') { console.log("Format set to : " + format + "\n"); }
   params.format = format !== '' ? format : false;
 
   // If format is empty, rename files only
   if (!params.format) { treatFiles('rename'); return }
 
   // Ask user for quality
-  let quality = await prompt("Enter a quality or leave empty (0-100) (default: 100)");
+  let quality = await prompt("Enter a quality or leave empty (0-100) (default: 100)\n");
   if (quality === null) { quality = ''; }
-  if (quality !== '') { console.log("Quality set to : " + quality); }
+  if (quality !== '') { console.log("Quality set to : " + quality + "\n"); }
   params.quality = quality !== '' && !isNaN(quality) ? Number(quality) : 100;
 
   // Ask user for metadata
-  let metadata = await prompt("Preserve metadata ? (y/n) or leave empty (default: false)");
+  let metadata = await prompt("Preserve metadata ? (y/n) or leave empty (default: false)\n");
   if (metadata === null) { metadata = ''; }
-  if (metadata !== 'y') { console.log("Will preserve metadata"); }
   params.metadata = metadata == 'y' ? true : false;
+  const metadata_msg = params.metadata ? "Metadata will be preserved" : "Metadata will be deleted";
+  console.log(metadata_msg + "\n");
 
   treatFiles('convert');
 }
