@@ -1,0 +1,1 @@
+node smart_compress.js
